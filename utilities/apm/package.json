@@ -1,0 +1,15 @@
+{
+  "name": "apertus-package-manager",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "MTA SZTAKI",
+  "license": "MIT",
+  "dependencies": {
+    "shelljs": "^0.7.8",
+    "yargs": "^8.0.1"
+  }
+}
