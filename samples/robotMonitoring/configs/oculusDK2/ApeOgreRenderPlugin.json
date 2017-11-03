@@ -8,11 +8,11 @@
       {
         "enable": true,
         "name": "OculusDK2",
-        "monitorIndex": 1,
+        "monitorIndex": 0,
         "resolution": {
           "width": 1920,
-          "height": 1080,
-          "fullScreen": true
+          "height": 1200,
+          "fullScreen": false
         },
         "miscParams": {
           "vSync": true,

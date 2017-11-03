@@ -27,7 +27,7 @@
             "ApeOgreRenderPlugin",
             "ApeOculusDK2Plugin",
             "ApeRobotMonitoringPlugin",
-	    "ApeAssimpAssetLoaderPlugin"
+            "ApeAssimpAssetLoaderPlugin"
         ]
     }
 }

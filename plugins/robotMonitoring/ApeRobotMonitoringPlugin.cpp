@@ -27,7 +27,7 @@ ApeRobotMonitoringPlugin::ApeRobotMonitoringPlugin()
 	mScenePoses.push_back(ScenePose(Ape::Vector3(-70.0181, 135.128, -210.108), Ape::Quaternion(0.338892, -0.025976, -0.937716, -0.0718755)));
 	mScenePoses.push_back(ScenePose(Ape::Vector3(-33.8124, 140.147, 53.4488), Ape::Quaternion(0.938396, -0.169305, -0.29646, -0.0534873)));
 	mAvatar1NodeOffsetPos = Ape::Vector3(0, 0, -50);
-	mAvatar1NodeOffsetOri = Ape::Quaternion(0, 0, 1, 0);
+	mAvatar1NodeOffsetOri = Ape::Quaternion(1, 0, 0, 0);
 	mAvatar2NodeOffsetPos = Ape::Vector3(20, 0, -50);
 	mAvatar2NodeOffsetOri = Ape::Quaternion(0, 0, 1, 0);
 	/*mScenePoses.push_back(ScenePose(Ape::Vector3(0.0, -225, 100060.0), Ape::Quaternion(0.994803, 0, -0.101823, 0)));
@@ -72,11 +72,11 @@ void ApeRobotMonitoringPlugin::eventCallBack(const Ape::Event& event)
 		mAvatar1Node = mpScene->getNode(event.subjectName);
 	if (event.type == Ape::Event::Type::NODE_CREATE && event.subjectName == "hamori_akos.meshnode")
 		mAvatar2Node = mpScene->getNode(event.subjectName);
-	else if (event.type == Ape::Event::Type::CAMERA_CREATE)
+	/*else if (event.type == Ape::Event::Type::CAMERA_CREATE)
 	{
 		if (auto camera = std::static_pointer_cast<Ape::ICamera>(mpScene->getEntity(event.subjectName).lock()))
 			camera->setParentNode(mUserNode);
-	}
+	}*/
 	else if (event.type == Ape::Event::Type::NODE_CREATE)
 	{
 		if (auto node = mpScene->getNode(event.subjectName).lock())
@@ -292,28 +292,28 @@ bool ApeRobotMonitoringPlugin::keyPressed(const OIS::KeyEvent& e)
 								userNode->getPosition(),
 								mScenePoses4UserNode[i].position,
 								5.0,
-								[&](Ape::Vector3 pos) { userNode->setPosition(pos); }
+								[&](Ape::Vector3 pos) { avatar1Node->setPosition(pos); }
 							);
 							auto rotateInterpolator = std::make_unique<Ape::Interpolator>(false);
 							rotateInterpolator->addSection(
 								userNode->getOrientation(),
-								mScenePoses4UserNode[i].orientation,
+								mScenePoses4UserNode[i].orientation * Ape::Quaternion(0, 0, 1, 0),
 								5.0,
-								[&](Ape::Quaternion ori) { userNode->setOrientation(ori); }
+								[&](Ape::Quaternion ori) { avatar1Node->setOrientation(ori); }
 							);
 							auto moveInterpolator1 = std::make_unique<Ape::Interpolator>(false);
 							moveInterpolator1->addSection(
 								avatar1Node->getPosition(),
 								mScenePoses[i].position + mAvatar1NodeOffsetPos,
 								5.0,
-								[&](Ape::Vector3 pos) { avatar1Node->setPosition(pos); }
+								[&](Ape::Vector3 pos) { userNode->setPosition(pos); }
 							);
 							auto rotateInterpolator1 = std::make_unique<Ape::Interpolator>(false);
 							rotateInterpolator1->addSection(
 								avatar1Node->getOrientation(),
 								mScenePoses[i].orientation * mAvatar1NodeOffsetOri,
 								5.0,
-								[&](Ape::Quaternion ori) { avatar1Node->setOrientation(ori); }
+								[&](Ape::Quaternion ori) { userNode->setOrientation(ori); }
 							);
 							auto moveInterpolator2 = std::make_unique<Ape::Interpolator>(false);
 							moveInterpolator2->addSection(
