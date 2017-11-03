@@ -154,14 +154,14 @@ add_subdirectory(${PATH_OGRE_PROCEDURAL} ${PATH_OGRE_PROCEDURAL} EXCLUDE_FROM_AL
 set (CMAKE_SOURCE_DIR ${STORED_CMSD})
 set (CMAKE_INSTALL_PREFIX ${STORED_CIP})
 set (CMAKE_MODULE_PATH ${PATH_OGRE_PROCEDURAL}/CMake/Utils;${PATH_OGRE_PROCEDURAL}/CMake;${PATH_OGRE_PROCEDURAL}/CMake/Packages)
-find_package (OgreProcedural QUIET)
-if (OgreProcedural_FOUND)
+#find_package (OgreProcedural QUIET)
+#if (OgreProcedural_FOUND)
 	set(OGRE_PROCEDURAL_READY TRUE)
-	message (STATUS "ogre_procedural is installed" )
-else ()
-	set(OGRE_PROCEDURAL_READY FALSE)
-	message (STATUS "ogre_procedural is not installed")
-endif ()
+#	message (STATUS "ogre_procedural is installed" )
+#else ()
+#	set(OGRE_PROCEDURAL_READY FALSE)
+#	message (STATUS "ogre_procedural is not installed")
+#endif ()
 #try ogre_procedural
 if (NOT OGRE_PROCEDURAL_READY)
 #build ogre_procedural
@@ -283,6 +283,13 @@ include_directories(
 	${OGRE_RTShaderSystem_INCLUDE_DIRS}
 	${OGRE_CgProgramManager_INCLUDE_DIRS}
 	${OgreProcedural_INCLUDE_DIRS}
+	${HYDRAX_HOME}/src
+	${HYDRAX_HOME}/src/Modules
+	${HYDRAX_HOME}/src/Noise
+	${SKYX_HOME}/src
+	${SKYX_HOME}/src/VClouds
+	"C:/Apertus/ApertusVR/3rdParty/ogre_procedural/library/include"
+	"C:/Apertus/ApertusVR/3rdParty/ogre_procedural/include"
 	${HYDRAX_HOME}/include
 	${HYDRAX_HOME}/include/Modules
 	${HYDRAX_HOME}/include/Noise
@@ -290,9 +297,14 @@ include_directories(
 	${SKYX_HOME}/src/VClouds
 	${RAPIDJSON_INCLUDE_DIR}
 	)
+add_library(MY_PROCEDURAL STATIC IMPORTED)
+if (WIN32)
+	set_property(TARGET MY_PROCEDURAL PROPERTY IMPORTED_LOCATION_DEBUG ${PATH_OGRE_PROCEDURAL}/lib/Debug/OgreProcedural_d.lib)
+	set_property(TARGET MY_PROCEDURAL PROPERTY IMPORTED_LOCATION_RELEASE ${PATH_OGRE_PROCEDURAL}/lib/Release/OgreProcedural.lib)
+endif ()
 add_library (ApeOgreRenderPlugin SHARED ${SOURCES} ${HEADERS})
 target_link_libraries (ApeOgreRenderPlugin ApePluginManager ApeScene ApeEventManager ApeSystemConfig ApeMainWindow ${OGRE_LIBRARIES} ${OGRE_Overlay_LIBRARIES} ${OGRE_HLMS_LIBRARIES} ${OGRE_MeshLodGenerator_LIBRARIES}
-${OGRE_Plugin_ParticleFX_LIBRARIES} ${OGRE_RenderSystem_Direct3D9_LIBRARIES} ${OGRE_RenderSystem_Direct3D11_LIBRARIES} ${OGRE_RenderSystem_GL_LIBRARIES} ${OGRE_RTShaderSystem_LIBRARIES} ${OGRE_CgProgramManager_LIBRARIES} ${OgreProcedural_LIBRARIES} MY_HYDRAX MY_SKYX )
+${OGRE_Plugin_ParticleFX_LIBRARIES} ${OGRE_RenderSystem_Direct3D9_LIBRARIES} ${OGRE_RenderSystem_Direct3D11_LIBRARIES} ${OGRE_RenderSystem_GL_LIBRARIES} ${OGRE_RTShaderSystem_LIBRARIES} ${OGRE_CgProgramManager_LIBRARIES} MY_PROCEDURAL MY_HYDRAX MY_SKYX)
 set_property (TARGET ApeOgreRenderPlugin PROPERTY COMPILE_DEFINITIONS APE_SOURCE_DIR="${APE_SOURCE_DIR}")
 set_property (TARGET ApeOgreRenderPlugin PROPERTY FOLDER "Plugins")
 if (WIN32)
