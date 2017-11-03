@@ -52,6 +52,7 @@ SOFTWARE.*/
 #include "ApeInterpolator.h"
 #include "ApeIFileGeometry.h"
 #include "ApeIMainWindow.h"
+#include "ApeIBrowser.h"
 #include "OIS.h"
 
 

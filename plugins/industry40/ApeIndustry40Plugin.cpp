@@ -19,7 +19,13 @@ ApeIndustry40Plugin::ApeIndustry40Plugin()
 	mScenePoses = std::vector<ScenePose>();
 	/*mScenePoses.push_back(ScenePose(Ape::Vector3(0.0, -225, 100060.0), Ape::Quaternion(0.994803, 0, -0.101823, 0)));
 	mScenePoses.push_back(ScenePose(Ape::Vector3(0.0, -285, 200060.0), Ape::Quaternion(0.994803, 0, -0.101823, 0)));*/
-	mScenePoses.push_back(ScenePose(Ape::Vector3(-48, -258, -150), Ape::Quaternion(1, 0, 0, 0)));
+	/*mScenePoses.push_back(ScenePose(Ape::Vector3(-48, -258, -150), Ape::Quaternion(1, 0, 0, 0)));*/
+	/*Remote Industrial Production Monitoring and Control*/
+	mScenePoses.push_back(ScenePose(Ape::Vector3(-50, 100, 0), Ape::Quaternion(1, 0, 0, 0)));
+	mScenePoses.push_back(ScenePose(Ape::Vector3(-50, 100, -200), Ape::Quaternion(0, 0, 1, 0)));
+	mScenePoses.push_back(ScenePose(Ape::Vector3(148.098, 119.733, -450.944), Ape::Quaternion(0.306377, -0.02873, 0.947321, 0.0888335)));
+	mScenePoses.push_back(ScenePose(Ape::Vector3(148.098, 119.733, -450.944), Ape::Quaternion(0.306377, -0.02873, 0.947321, 0.0888335)));
+
 	mSwitchNodeVisibilityToggleIndex = 0;
 	/*mSwitchNodeVisibilityNames = std::vector<std::string>();
 	mSwitchNodeVisibilityNames.push_back("WeldingFixture@base1Switch");
@@ -96,6 +102,23 @@ void ApeIndustry40Plugin::Init()
 		light->setLightDirection(Ape::Vector3(0, -1, 1));
 		light->setDiffuseColor(Ape::Color(0.6f, 0.6f, 0.6f));
 		light->setSpecularColor(Ape::Color(0.6f, 0.6f, 0.6f));
+	}
+
+	if (auto browserNode = mpScene->createNode("browserNode").lock())
+	{
+		browserNode->setPosition(Ape::Vector3(-50, 100, -100));
+		if (auto browserGeometry = std::static_pointer_cast<Ape::IFileGeometry>(mpScene->createEntity("sphere.mesh", Ape::Entity::GEOMETRY_FILE).lock()))
+		{
+			browserGeometry->setFileName("sphere.mesh");
+			//browserGeometry->setFileName("thetaSphere.mesh");
+			browserGeometry->setParentNode(browserNode);
+			if (auto browser = std::static_pointer_cast<Ape::IBrowser>(mpScene->createEntity("browser", Ape::Entity::BROWSER).lock()))
+			{
+				browser->setResoultion(2048, 1024);
+				browser->setURL("https://www.youtube.com/embed/aRB13POSo80?vq=hd1080&autoplay=1&start=592");
+				browser->setGeometry(browserGeometry);
+			}
+		}
 	}
 
 	
@@ -244,6 +267,37 @@ bool ApeIndustry40Plugin::keyPressed(const OIS::KeyEvent& e)
 			toggleScenePoses(userNode);
 		else if (mKeyCodeMap[OIS::KeyCode::KC_C])
 			saveUserNodePose(userNode);
+		if (mKeyCodeMap[OIS::KeyCode::KC_P])
+		{
+			for (int i = 0; i < mScenePoses.size(); i++)
+			{
+				if (auto userNode = mUserNode.lock())
+				{
+					auto moveInterpolator = std::make_unique<Ape::Interpolator>(false);
+					moveInterpolator->addSection(
+						userNode->getPosition(),
+						mScenePoses[i].position,
+						10.0,
+						[&](Ape::Vector3 pos) { userNode->setPosition(pos); }
+					);
+					auto rotateInterpolator = std::make_unique<Ape::Interpolator>(false);
+					rotateInterpolator->addSection(
+						userNode->getOrientation(),
+						mScenePoses[i].orientation,
+						10.0,
+						[&](Ape::Quaternion ori) { userNode->setOrientation(ori); }
+					);
+					while (!moveInterpolator->isQueueEmpty() && !rotateInterpolator->isQueueEmpty())
+					{
+						if (!moveInterpolator->isQueueEmpty())
+							moveInterpolator->iterateTopSection();
+						if (!rotateInterpolator->isQueueEmpty())
+							rotateInterpolator->iterateTopSection();
+					}
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+			}
+		}
 	}
 	if (mKeyCodeMap[OIS::KeyCode::KC_V])
 		toggleSwitchNodesVisibility();

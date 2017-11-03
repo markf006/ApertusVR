@@ -23,6 +23,7 @@
         "plugins": [
             "ApeNodeJsPlugin",
             "ApeOgreRenderPlugin",
+            "ApeCefBrowserPlugin",
             "ApeIndustry40Plugin"
         ]
     }

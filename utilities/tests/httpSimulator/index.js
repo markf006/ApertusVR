@@ -1,6 +1,6 @@
-var request = require('request');
+﻿var request = require('request');
 var LineByLineReader = require('line-by-line');
-var lr = new LineByLineReader(process.argv[2] || 'apertusvr.log');
+var lr = new LineByLineReader(process.argv[2]);
 
 lr.on('error', function (err) {
 	console.log('line-reader: error: ', err);
@@ -25,7 +25,9 @@ lr.on('line', function (line) {
 			console.log();
 			console.log('request: body: ', body);
 
-			lr.resume();
+			setTimeout(function () {
+				lr.resume();
+			}, 20);
 		}
 	);
 });

@@ -125,7 +125,7 @@ void Ape::CefBrowserPlugin::createBrowser(Ape::BrowserSharedPtr browser)
 		{
 			browserTexture->setParameters(browser->getResoultion().x, browser->getResoultion().y, Ape::Texture::PixelFormat::A8R8G8B8, Ape::Texture::Usage::DYNAMIC_WRITE_ONLY);
 			browserMaterial->setPassTexture(browserTexture);
-			browserMaterial->setCullingMode(Ape::Material::CullingMode::NONE_CM);
+			browserMaterial->setCullingMode(Ape::Material::CullingMode::CLOCKWISE);
 			browserMaterial->setSceneBlending(Ape::Pass::SceneBlendingType::TRANSPARENT_ALPHA);
 			mBrowserCounter++;
 			mpApeCefRenderHandlerImpl->addTexture(mBrowserCounter, browserTexture);
