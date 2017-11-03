@@ -78,17 +78,33 @@ void Ape::AssimpAssetLoaderPlugin::Run()
 				//TODO be careful maybe should impelent the pluginManager interface and get infomration about ogreRender plugin  (native format when ogrePlugin is the renderer)
 				if (fileExtension == ".mesh")
 				{
-					if (auto node = mpScene->createNode("node").lock())
+					if (auto node = mpScene->createNode(fileName + "node").lock())
 					{
+						Ape::Radian angle(1.57f);
+						Ape::Vector3 axis(0, 0, 1);
+						Ape::Quaternion orientation;
+						orientation.FromAngleAxis(angle, axis);
+						//node->setOrientation(orientation);
+						node->setScale(Ape::Vector3(0.001, 0.001, 0.001));
 						if (auto meshFile = std::static_pointer_cast<Ape::IFileGeometry>(mpScene->createEntity(fileName, Ape::Entity::GEOMETRY_FILE).lock()))
 						{
 							meshFile->setFileName(fileName);
-							meshFile->mergeSubMeshes();
+							//meshFile->mergeSubMeshes();
 							//TODO how to use it when static geomtery is created?
-							//meshFile->setParentNode(node);
+							meshFile->setParentNode(node);
 							//TODO how to export the optimized mesh when static geomtery is created?
 							//std::this_thread::sleep_for(std::chrono::milliseconds(20000));
 							//meshFile->exportMesh();
+						}
+						if (fileName == "kovacs_peter.mesh")
+						{
+							node->setPosition(Ape::Vector3(0, 150, 100));
+							mAvatar1Node = node;
+						}
+						else
+						{
+							node->setPosition(Ape::Vector3(0, 0, 100));
+							mAvatar2Node = node;
 						}
 					}
 				}
@@ -132,6 +148,7 @@ void Ape::AssimpAssetLoaderPlugin::Run()
 			}
 		}
 	}
+
 }
 
 void Ape::AssimpAssetLoaderPlugin::Step()
@@ -176,9 +193,13 @@ void Ape::AssimpAssetLoaderPlugin::createNode(int assimpSceneID, aiNode* assimpN
 			if (parentNode.lock())
 				node->setParentNode(parentNode);
 		}
-		node->setPosition(Ape::Vector3(position.x, position.y, position.z));
-		node->setOrientation(Ape::Quaternion(rotation.w, rotation.x, rotation.y, rotation.z));
-		node->setScale(Ape::Vector3(scaling.x, scaling.y, scaling.z));
+		node->setPosition(Ape::Vector3(0, 150, 100));
+		Ape::Radian angle(1.57f);
+		Ape::Vector3 axis(0, 0, 1);
+		Ape::Quaternion orientation;
+		orientation.FromAngleAxis(angle, axis);
+		node->setOrientation(orientation);
+		node->setScale(Ape::Vector3(0.001, 0.001, 0.001));
 		std::cout << "AssimpAssetLoaderPlugin::createNode " << node->getName() << std::endl;
 		for (int i = 0; i < assimpNode->mNumMeshes; i++)
 		{

@@ -16,10 +16,23 @@ ApeRobotMonitoringPlugin::ApeRobotMonitoringPlugin()
 	mTranslateSpeedFactor = 3;
 	mRotateSpeedFactor = 1;
 	mSceneToggleIndex = 0;
+	mScenePoses4UserNode = std::vector<ScenePose>();
 	mScenePoses = std::vector<ScenePose>();
-	mScenePoses.push_back(ScenePose(Ape::Vector3(0.0, -225, 100060.0), Ape::Quaternion(0.994803, 0, -0.101823, 0)));
+
+	mScenePoses4UserNode.push_back(ScenePose(Ape::Vector3(52.6034, 169.296, 173.968), Ape::Quaternion(0.957153, -0.155938, 0.240836, 0.0392368)));
+	mScenePoses4UserNode.push_back(ScenePose(Ape::Vector3(-84.5945, 135.128, 98.2127), Ape::Quaternion(0.987748, -0.0335964, -0.152316, -0.00518071)));
+	mScenePoses4UserNode.push_back(ScenePose(Ape::Vector3(88.8639, 153.77, -225.366), Ape::Quaternion(0.232886, -0.0238371, 0.967159, 0.0989931)));
+
+	mScenePoses.push_back(ScenePose(Ape::Vector3(-138.348, 99.9663, 150.121), Ape::Quaternion(0.940576, -0.0640579, -0.332716, -0.0226596)));
+	mScenePoses.push_back(ScenePose(Ape::Vector3(-70.0181, 135.128, -210.108), Ape::Quaternion(0.338892, -0.025976, -0.937716, -0.0718755)));
+	mScenePoses.push_back(ScenePose(Ape::Vector3(-33.8124, 140.147, 53.4488), Ape::Quaternion(0.938396, -0.169305, -0.29646, -0.0534873)));
+	mAvatar1NodeOffsetPos = Ape::Vector3(0, 0, -50);
+	mAvatar1NodeOffsetOri = Ape::Quaternion(0, 0, 1, 0);
+	mAvatar2NodeOffsetPos = Ape::Vector3(20, 0, -50);
+	mAvatar2NodeOffsetOri = Ape::Quaternion(0, 0, 1, 0);
+	/*mScenePoses.push_back(ScenePose(Ape::Vector3(0.0, -225, 100060.0), Ape::Quaternion(0.994803, 0, -0.101823, 0)));
 	mScenePoses.push_back(ScenePose(Ape::Vector3(0.0, -285, 200060.0), Ape::Quaternion(0.994803, 0, -0.101823, 0)));
-	mScenePoses.push_back(ScenePose(Ape::Vector3(-48, -258, -45), Ape::Quaternion(1, 0, 0, 0)));
+	mScenePoses.push_back(ScenePose(Ape::Vector3(-48, -258, -45), Ape::Quaternion(1, 0, 0, 0)));*/
 	mSwitchNodeVisibilityToggleIndex = 0;
 	/*mSwitchNodeVisibilityNames = std::vector<std::string>();
 	mSwitchNodeVisibilityNames.push_back("WeldingFixture@base1Switch");
@@ -55,6 +68,10 @@ void ApeRobotMonitoringPlugin::eventCallBack(const Ape::Event& event)
 {
 	if (event.type == Ape::Event::Type::NODE_CREATE && event.subjectName == mpSystemConfig->getSceneSessionConfig().generatedUniqueUserNodeName)
 		mUserNode = mpScene->getNode(event.subjectName);
+	if (event.type == Ape::Event::Type::NODE_CREATE && event.subjectName == "kovacs_peter.meshnode")
+		mAvatar1Node = mpScene->getNode(event.subjectName);
+	if (event.type == Ape::Event::Type::NODE_CREATE && event.subjectName == "hamori_akos.meshnode")
+		mAvatar2Node = mpScene->getNode(event.subjectName);
 	else if (event.type == Ape::Event::Type::CAMERA_CREATE)
 	{
 		if (auto camera = std::static_pointer_cast<Ape::ICamera>(mpScene->getEntity(event.subjectName).lock()))
@@ -77,20 +94,11 @@ void ApeRobotMonitoringPlugin::eventCallBack(const Ape::Event& event)
 void ApeRobotMonitoringPlugin::Init()
 {
 	std::cout << "ApeRobotMonitoringPlugin::init" << std::endl;
-	if (auto node = mpScene->createNode("standNode").lock())
-	{
-		node->setPosition(Ape::Vector3(0, 0, 0));
-		if (auto meshFile = std::static_pointer_cast<Ape::IFileGeometry>(mpScene->createEntity("stand.mesh", Ape::Entity::GEOMETRY_FILE).lock()))
-		{
-			meshFile->setFileName("stand.mesh");
-			meshFile->setParentNode(node);
-		}
-	}
-	/*if (auto skyBoxMaterial = std::static_pointer_cast<Ape::IFileMaterial>(mpScene->createEntity("skyBox", Ape::Entity::MATERIAL_FILE).lock()))
+	if (auto skyBoxMaterial = std::static_pointer_cast<Ape::IFileMaterial>(mpScene->createEntity("skyBox", Ape::Entity::MATERIAL_FILE).lock()))
 	{
 		skyBoxMaterial->setFileName("skyBox.material");
 		skyBoxMaterial->setAsSkyBox();
-	}*/
+	}
 	if (auto light = std::static_pointer_cast<Ape::ILight>(mpScene->createEntity("light", Ape::Entity::LIGHT).lock()))
 	{
 		light->setLightType(Ape::Light::Type::DIRECTIONAL);
@@ -269,6 +277,87 @@ bool ApeRobotMonitoringPlugin::keyPressed(const OIS::KeyEvent& e)
 			toggleScenePoses(userNode);
 		else if (mKeyCodeMap[OIS::KeyCode::KC_C])
 			saveUserNodePose(userNode);
+		else if (mKeyCodeMap[OIS::KeyCode::KC_P])
+		{
+			for (int i = 0; i < mScenePoses.size(); i++)
+			{
+				if (auto userNode = mUserNode.lock())
+				{
+					if (auto avatar1Node = mAvatar1Node.lock())
+					{
+						if (auto avatar2Node = mAvatar2Node.lock())
+						{
+							auto moveInterpolator = std::make_unique<Ape::Interpolator>(false);
+							moveInterpolator->addSection(
+								userNode->getPosition(),
+								mScenePoses4UserNode[i].position,
+								5.0,
+								[&](Ape::Vector3 pos) { userNode->setPosition(pos); }
+							);
+							auto rotateInterpolator = std::make_unique<Ape::Interpolator>(false);
+							rotateInterpolator->addSection(
+								userNode->getOrientation(),
+								mScenePoses4UserNode[i].orientation,
+								5.0,
+								[&](Ape::Quaternion ori) { userNode->setOrientation(ori); }
+							);
+							auto moveInterpolator1 = std::make_unique<Ape::Interpolator>(false);
+							moveInterpolator1->addSection(
+								avatar1Node->getPosition(),
+								mScenePoses[i].position + mAvatar1NodeOffsetPos,
+								5.0,
+								[&](Ape::Vector3 pos) { avatar1Node->setPosition(pos); }
+							);
+							auto rotateInterpolator1 = std::make_unique<Ape::Interpolator>(false);
+							rotateInterpolator1->addSection(
+								avatar1Node->getOrientation(),
+								mScenePoses[i].orientation * mAvatar1NodeOffsetOri,
+								5.0,
+								[&](Ape::Quaternion ori) { avatar1Node->setOrientation(ori); }
+							);
+							auto moveInterpolator2 = std::make_unique<Ape::Interpolator>(false);
+							moveInterpolator2->addSection(
+								avatar2Node->getPosition(),
+								mScenePoses[i].position + mAvatar2NodeOffsetPos,
+								5.0,
+								[&](Ape::Vector3 pos) { avatar2Node->setPosition(pos); }
+							);
+							auto rotateInterpolator2 = std::make_unique<Ape::Interpolator>(false);
+							rotateInterpolator2->addSection(
+								avatar2Node->getOrientation(),
+								mScenePoses[i].orientation * mAvatar2NodeOffsetOri,
+								5.0,
+								[&](Ape::Quaternion ori) { avatar2Node->setOrientation(ori); }
+							);
+							while (!moveInterpolator->isQueueEmpty() && !rotateInterpolator->isQueueEmpty())
+							{
+								if (!moveInterpolator->isQueueEmpty())
+									moveInterpolator->iterateTopSection();
+								if (!rotateInterpolator->isQueueEmpty())
+									rotateInterpolator->iterateTopSection();
+							}
+							std::this_thread::sleep_for(std::chrono::milliseconds(100));
+							while (!moveInterpolator1->isQueueEmpty() && !rotateInterpolator1->isQueueEmpty())
+							{
+								if (!moveInterpolator1->isQueueEmpty())
+									moveInterpolator1->iterateTopSection();
+								if (!rotateInterpolator1->isQueueEmpty())
+									rotateInterpolator1->iterateTopSection();
+							}
+							std::this_thread::sleep_for(std::chrono::milliseconds(300));
+							while (!moveInterpolator2->isQueueEmpty() && !rotateInterpolator2->isQueueEmpty())
+							{
+								if (!moveInterpolator2->isQueueEmpty())
+									moveInterpolator2->iterateTopSection();
+								if (!rotateInterpolator2->isQueueEmpty())
+									rotateInterpolator2->iterateTopSection();
+							}
+						}
+					}
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			}
+		}
 	}
 	if (mKeyCodeMap[OIS::KeyCode::KC_V])
 		toggleSwitchNodesVisibility();

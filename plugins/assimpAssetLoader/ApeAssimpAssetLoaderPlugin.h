@@ -78,6 +78,10 @@ namespace Ape
 
 		Ape::NodeWeakPtr mUserNode;
 
+		Ape::NodeWeakPtr mAvatar1Node;
+
+		Ape::NodeWeakPtr mAvatar2Node;
+
 		Assimp::Importer* mpAssimpImporter;
 
 		std::vector<const aiScene*> mAssimpScenes;

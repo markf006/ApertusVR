@@ -40,25 +40,13 @@ Ape::OISUserInputPlugin::OISUserInputPlugin()
 	mpEventManager->connectEvent(Ape::Event::Group::NODE, std::bind(&OISUserInputPlugin::eventCallBack, this, std::placeholders::_1));
 	mUserNodePoses = std::vector<UserNodePose>();
 	
-	/*Immersive multimedia gallery*/
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(495.233, 533.024, 1133.94), Ape::Quaternion(0.921982, -0.182579, 0.334983, 0.0663366)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-600, -600, -500), Ape::Quaternion(1, 0, 0, 0)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(495.233, 533.024, 1133.94), Ape::Quaternion(0.921982, -0.182579, 0.334983, 0.0663366)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-1200, -600, -500), Ape::Quaternion(1, 0, 0, 0)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(495.233, 533.024, 1133.94), Ape::Quaternion(0.921982, -0.182579, 0.334983, 0.0663366)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-600, 0, -500), Ape::Quaternion(1, 0, 0, 0)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(495.233, 533.024, 1133.94), Ape::Quaternion(0.921982, -0.182579, 0.334983, 0.0663366)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-1200, 0, -500), Ape::Quaternion(1, 0, 0, 0)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(495.233, 533.024, 1133.94), Ape::Quaternion(0.921982, -0.182579, 0.334983, 0.0663366)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-600, 0, -500), Ape::Quaternion(1, 0, 0, 0)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(495.233, 533.024, 1133.94), Ape::Quaternion(0.921982, -0.182579, 0.334983, 0.0663366)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-1200, -600, 100), Ape::Quaternion(1, 0, 0, 0)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(495.233, 533.024, 1133.94), Ape::Quaternion(0.921982, -0.182579, 0.334983, 0.0663366)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-600, -600, 100), Ape::Quaternion(1, 0, 0, 0)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(495.233, 533.024, 1133.94), Ape::Quaternion(0.921982, -0.182579, 0.334983, 0.0663366)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-1200, 0, 100), Ape::Quaternion(1, 0, 0, 0)));
-	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(495.233, 533.024, 1133.94), Ape::Quaternion(0.921982, -0.182579, 0.334983, 0.0663366)));
+	/*Immersive multimedia content service*/
+	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(0, 0, 100), Ape::Quaternion(1, 0, 0, 0)));
+	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(0, 0, -100), Ape::Quaternion(0, 0, 1, 0)));
+	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(0, 0, 100), Ape::Quaternion(1, 0, -0.05, 0)));
 	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-600, 0, 100), Ape::Quaternion(1, 0, 0, 0)));
+	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-600, 0, -100), Ape::Quaternion(0, 0, 1, 0)));
+	mUserNodePoses.push_back(UserNodePose(Ape::Vector3(-600, 0, 100), Ape::Quaternion(1, 0, 0.05, 0)));
 		
 	/*mUserNodePoses.push_back(UserNodePose(Ape::Vector3(100.079, -583, -478.537), Ape::Quaternion(0.250597, 0, 0.968092, 0)));
 
@@ -178,20 +166,23 @@ bool Ape::OISUserInputPlugin::keyPressed(const OIS::KeyEvent& e)
 		{
 			for (int i = 0; i < mUserNodePoses.size(); i++)
 			{
+				float time = 10.0f;
+				if (i == 3)
+					time = 0.01f;
 				if (auto userNode = mUserNode.lock())
 				{
 					auto moveInterpolator = std::make_unique<Ape::Interpolator>(false);
 					moveInterpolator->addSection(
 						userNode->getPosition(),
 						mUserNodePoses[i].position,
-						10.0,
+						time,
 						[&](Ape::Vector3 pos) { userNode->setPosition(pos); }
 					);
 					auto rotateInterpolator = std::make_unique<Ape::Interpolator>(false);
 					rotateInterpolator->addSection(
 						userNode->getOrientation(),
 						mUserNodePoses[i].orientation,
-						10.0,
+						time,
 						[&](Ape::Quaternion ori) { userNode->setOrientation(ori); }
 					);
 					while (!moveInterpolator->isQueueEmpty() && !rotateInterpolator->isQueueEmpty())

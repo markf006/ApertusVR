@@ -9,7 +9,8 @@
         "sessionGUID": "UNASSIGNED_RAKNET_GUID",
         "sessionResourceLocation": [
             "/plugins/robotMonitoring/resources",
-            "/plugins/oculusDK2/resources"
+            "/plugins/oculusDK2/resources",
+            "/plugins/assimpAssetLoader/resources"
         ],
         "natPunchThroughServer": {
             "ip": "195.111.2.95",
@@ -25,7 +26,8 @@
             "ApeNodeJsPlugin",
             "ApeOgreRenderPlugin",
             "ApeOculusDK2Plugin",
-            "ApeRobotMonitoringPlugin"
+            "ApeRobotMonitoringPlugin",
+	    "ApeAssimpAssetLoaderPlugin"
         ]
     }
 }

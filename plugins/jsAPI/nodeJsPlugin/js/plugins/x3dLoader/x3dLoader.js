@@ -453,7 +453,12 @@ exports.parseItem = function(parentItem, currentItem, parentNodeObj) {
 			if (currentlyLoadingFileName == 'weldingFixture') {
 				nodeObj.setScale(new ape.nbind.Vector3(0.1, 0.1, 0.1));
 				nodeObj.setOrientation(new ape.nbind.Quaternion(0.7071, -0.7071, 0, 0));
-				nodeObj.setPosition(new ape.nbind.Vector3(0, 0, 100000));
+				nodeObj.setPosition(new ape.nbind.Vector3(0, 0, 0));
+			}
+			if (currentlyLoadingFileName == 'kovacs_peter') {
+				nodeObj.setScale(new ape.nbind.Vector3(0.1, 0.1, 0.1));
+				nodeObj.setOrientation(new ape.nbind.Quaternion(0.7071, -0.7071, 0, 0));
+				nodeObj.setPosition(new ape.nbind.Vector3(0, 0, 0));
 			}
 			if (currentlyLoadingFileName == 'cell') {
 				nodeObj.setScale(new ape.nbind.Vector3(0.1, 0.1, 0.1));

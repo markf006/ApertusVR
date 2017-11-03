@@ -93,9 +93,23 @@ private:
 
 	OIS::Mouse* mpMouse;
 
+	Ape::NodeWeakPtr mAvatar1Node;
+
+	Ape::NodeWeakPtr mAvatar2Node;
+
+	Ape::Vector3 mAvatar1NodeOffsetPos;
+
+	Ape::Vector3 mAvatar2NodeOffsetPos;
+
+	Ape::Quaternion mAvatar1NodeOffsetOri;
+
+	Ape::Quaternion mAvatar2NodeOffsetOri;
+
 	int mSceneToggleIndex;
 
 	std::vector<ScenePose> mScenePoses;
+
+	std::vector<ScenePose> mScenePoses4UserNode;
 
 	int mSwitchNodeVisibilityToggleIndex;
 
